@@ -1,0 +1,38 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: grtfood-postgres
+    environment:
+      POSTGRES_DB: grtfood
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d grtfood"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: grtfood-backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file:
+      - ./backend/.env
+    environment:
+      FOOD_PORT: 8082
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/grtfood
+    ports:
+      - "8082:8082"
+    restart: unless-stopped
+
+volumes:
+  postgres_data:

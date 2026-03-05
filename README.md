@@ -53,3 +53,44 @@ cd frontend
 npm install
 npm run dev
 ```
+
+## Rodando com Docker (build único)
+
+Na raiz do projeto (`grtnovo/`):
+
+```bash
+docker compose up --build
+```
+
+Aplicação unificada:
+
+- Frontend + Backend: http://localhost:8082
+
+Comandos úteis:
+
+```bash
+# subir em background
+docker compose up -d --build
+
+# ver logs
+docker compose logs -f
+
+# parar e remover containers
+docker compose down
+```
+
+### Usando banco PostgreSQL já existente na máquina
+
+O `docker-compose.yml` atual sobe apenas a aplicação e usa o banco externo via `DATABASE_URL`.
+
+No arquivo `backend/.env`, ajuste:
+
+```dotenv
+DATABASE_URL=postgresql://USUARIO:SENHA@host.docker.internal:5432/NOME_DO_BANCO
+```
+
+Depois suba normalmente:
+
+```bash
+docker compose up -d --build
+```
